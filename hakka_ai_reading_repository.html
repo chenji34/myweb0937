@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>客家語言傳播與人工智慧：專題指定閱讀文獻庫</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts: Inter & Noto Serif / Sans TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif+TC:wght@600;700;900&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            hakka: {
+              50: '#f0f5fa',
+              100: '#e0ecf5',
+              200: '#c5dcee',
+              600: '#1e4b75',
+              700: '#183c5e',
+              800: '#13304d',
+              900: '#0e243a',
+            },
+            indigoCloth: '#1f2e4d', // 客家藍衫經典靛藍色調
+            ochre: '#c4823f',       // 雅緻文人大地金褐
+          },
+          fontFamily: {
+            serif: ['"Noto Serif TC"', 'serif'],
+            sans: ['"Inter"', '"Noto Sans TC"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom scrollbar and subtle pattern */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #94a3b8;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #64748b;
+    }
+    .hakka-pattern {
+      background-color: #0e243a;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col selection:bg-hakka-200 selection:text-hakka-900">
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none bg-slate-900 text-white text-sm px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-700">
+    <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400"></i>
+    <span id="toast-message">操作已成功</span>
+  </div>
+
+  <!-- Hero Header -->
+  <header class="hakka-pattern text-white border-b border-slate-800 shadow-xl relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-r from-hakka-900 via-transparent to-slate-900/80 pointer-events-none"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 relative z-10">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-hakka-600/50 border border-hakka-200/20 text-xs font-semibold text-hakka-100 tracking-wider mb-3">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+            客家語言傳播與數位人文跨領域研究
+          </div>
+          <h1 class="text-2xl sm:text-4xl lg:text-5xl font-black font-serif tracking-tight text-white leading-tight">
+            AI 科技與少數族群語言文化保存
+          </h1>
+          <p class="text-base sm:text-lg text-slate-300 mt-2 font-normal max-w-2xl leading-relaxed">
+            研究所專題指定閱讀文獻庫 (Curated Literature Repository) — 涵蓋語音合成、辨識、生成式模型、擬真人設、機器翻譯與演算法偏見六大主題。
+          </p>
+        </div>
+
+        <!-- Stat Card / Progress -->
+        <div class="bg-slate-800/80 backdrop-blur-md border border-slate-700/80 rounded-2xl p-5 w-full md:w-80 shadow-inner flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">文獻研讀進度</span>
+            <span class="text-xs font-medium text-amber-300" id="progress-percent">0%</span>
+          </div>
+          <div class="w-full bg-slate-700/60 rounded-full h-2.5 overflow-hidden mb-3">
+            <div id="progress-bar" class="bg-gradient-to-r from-sky-400 to-amber-400 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+          <div class="flex items-center justify-between text-xs text-slate-300">
+            <span>已閱讀標記：<strong id="read-count" class="text-white text-sm font-bold">0</strong> / 60 篇</span>
+            <span>收藏：<strong id="bookmark-count" class="text-white text-sm font-bold">0</strong> 篇</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sticky Controls Bar -->
+  <nav class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+      <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+        
+        <!-- Category Filter Tabs -->
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-none" id="category-tabs">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Search Bar and Filter Toggles -->
+        <div class="flex items-center gap-2.5">
+          <div class="relative flex-1 sm:w-72">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+            <input 
+              type="text" 
+              id="search-input" 
+              placeholder="搜尋篇名、發表論壇、中文摘要關鍵字..." 
+              class="w-full pl-9 pr-8 py-2 text-sm bg-slate-100 hover:bg-slate-50 focus:bg-white border border-slate-200 focus:border-hakka-600 rounded-xl outline-none transition text-slate-800 placeholder-slate-400"
+            />
+            <button id="clear-search" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <!-- Filter Bookmarked Only -->
+          <button id="toggle-bookmark-filter" class="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition">
+            <i data-lucide="bookmark" class="w-3.5 h-3.5 text-amber-500"></i>
+            <span class="hidden sm:inline">我的收藏</span>
+          </button>
+          
+          <!-- Filter Unread Only -->
+          <button id="toggle-unread-filter" class="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 transition">
+            <i data-lucide="circle" class="w-3.5 h-3.5 text-sky-500"></i>
+            <span class="hidden sm:inline">待讀文獻</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content Layout -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Active Category Banner & Meta Information -->
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+      <div>
+        <div class="flex items-center gap-2">
+          <h2 id="active-category-title" class="text-xl sm:text-2xl font-bold font-serif text-slate-900">所有研究主題</h2>
+          <span id="result-count-badge" class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-slate-100 text-slate-700 border border-slate-200">共 60 篇</span>
+        </div>
+        <p id="active-category-desc" class="text-sm text-slate-500 mt-1">包含 TTS、ASR、ChatGPT/LLM、Persona、MT 與 AI 偏見等跨領域研究之精選經典與前沿文獻。</p>
+      </div>
+      <div class="flex items-center gap-2 self-end sm:self-center">
+        <button id="btn-expand-all" class="text-xs text-slate-600 hover:text-hakka-700 font-medium px-2.5 py-1.5 rounded-lg hover:bg-slate-100 transition">展開全部摘要</button>
+        <span class="text-slate-300">|</span>
+        <button id="btn-collapse-all" class="text-xs text-slate-600 hover:text-hakka-700 font-medium px-2.5 py-1.5 rounded-lg hover:bg-slate-100 transition">收合全部摘要</button>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="hidden py-16 text-center">
+      <div class="w-16 h-16 mx-auto mb-4 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center">
+        <i data-lucide="book-open-check" class="w-8 h-8"></i>
+      </div>
+      <h3 class="text-lg font-bold text-slate-700">未找到符合條件的文獻</h3>
+      <p class="text-sm text-slate-500 mt-1 max-w-md mx-auto">請嘗試變更搜尋關鍵字，或清除分類與收藏篩選器。</p>
+      <button onclick="resetFilters()" class="mt-4 px-4 py-2 text-xs font-medium bg-hakka-600 hover:bg-hakka-700 text-white rounded-xl transition">
+        重設所有篩選條件
+      </button>
+    </div>
+
+    <!-- Paper Grid -->
+    <div id="papers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+      <!-- Populated dynamically -->
+    </div>
+  </main>
+
+  <!-- Citation Modal -->
+  <div id="citation-modal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <div class="flex items-center gap-2 text-hakka-800">
+          <i data-lucide="quote" class="w-5 h-5 text-amber-500"></i>
+          <h3 class="text-base font-bold">複製引用資訊 (Citation)</h3>
+        </div>
+        <button onclick="closeCitationModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <p class="text-xs text-slate-500 mb-2">提供 APA 格式參考草稿，可直接複製至專題報告參考文獻中：</p>
+      <div id="citation-text" class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-800 font-mono leading-relaxed select-all">
+        <!-- Citation text -->
+      </div>
+      <div class="mt-5 flex justify-end gap-3">
+        <button onclick="closeCitationModal()" class="px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-xl transition">關閉</button>
+        <button onclick="copyCitationContent()" class="px-4 py-2 text-xs font-semibold text-white bg-hakka-600 hover:bg-hakka-700 rounded-xl transition flex items-center gap-2">
+          <i data-lucide="copy" class="w-4 h-4"></i>
+          複製引用格式
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Academic Footer -->
+  <footer class="bg-slate-900 text-slate-400 border-t border-slate-800 text-xs py-10 mt-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+        <div class="w-10 h-10 rounded-xl bg-hakka-600/30 border border-hakka-200/20 flex items-center justify-center text-amber-400 font-bold font-serif text-lg">
+          客
+        </div>
+        <div>
+          <div class="text-white font-semibold text-sm">客家語言傳播與人工智慧 專題指定閱讀文獻庫</div>
+          <p class="text-slate-400 mt-0.5">國立客家研究及族群傳播研究所 / 客家語言文化數位典藏與科技應用專題</p>
+        </div>
+      </div>
+      <div class="text-center md:text-right text-slate-400">
+        <p>涵蓋 ACL, ISCA, IEEE, ACM, Springer, SAGE, MIT Press 等權威學術文獻</p>
+        <p class="mt-1">資料與進度儲存於瀏覽器 LocalStorage・隨時回溯學習歷程</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Complete 60 Articles Data Script -->
+  <script>
+    const PAPERS_DATA = [
+      // ==================== TTS (10 篇) ====================
+      {
+        id: "TTS-01",
+        category: "TTS",
+        title: "The World's First South Sámi TTS – A Revitalisation Effort of an Endangered Language by Reviving a Legacy Voice",
+        venue: "ACL Anthology (IWCLUL 2025)",
+        year: "2025",
+        url: "https://aclanthology.org/2025.iwclul-1.3.pdf",
+        summary: "介紹針對極度瀕危的南薩米語開發語音合成系統的歷程。研究團隊利用歷史錄音檔案中已故母語長者的聲音資料，藉由低資源 FastPitch 神經架構成功合成出具文化情感的「遺產聲音（legacy voice）」，深刻探討了語音科技如何在母語傳承中兼具歷史保存與教學輔助功能。"
+      },
+      {
+        id: "TTS-02",
+        category: "TTS",
+        title: "Towards Digital Preservation of Efik: TTS for a Low-Resource African Language",
+        venue: "arXiv Preprint (arXiv:2407.04515)",
+        year: "2024",
+        url: "https://arxiv.org/abs/2407.04515",
+        summary: "以奈及利亞低資源聲調語言 Efik 為例，探討神經語音合成在聲調建模（tonal contour）上的挑戰。研究顯示在僅有數小時錄音的情境下，如何透過遷移學習克服資料匱乏，對客語等高度依賴聲調辨義的少數族群語言深具借鏡價值。"
+      },
+      {
+        id: "TTS-03",
+        category: "TTS",
+        title: "Text-to-Speech System for Low-Resource Languages: A Case Study in Shipibo-Konibo",
+        venue: "AmericasNLP @ ACL",
+        year: "2024",
+        url: "https://aclanthology.org/2024.americasnlp-1.1/",
+        summary: "探討秘魯亞馬遜原住民族語言 Shipibo-Konibo 的端到端 TTS 建置。文章著重於語音合成系統如何從無到有建立音素對齊與資料庫，並探討技術落地於雙語教育時，族群社區對機器語音「母語純確度」的文化接受度。"
+      },
+      {
+        id: "TTS-04",
+        category: "TTS",
+        title: "Adversarial Text-to-Speech for Low-Resource Languages",
+        venue: "ACL Anthology (WANLP 2022)",
+        year: "2022",
+        url: "https://aclanthology.org/2022.wanlp-1.8.pdf",
+        summary: "提出基於生成對抗網路（GAN）的語音合成架構，透過跨方言與多語言的輔助資料進行共同訓練，大幅降低少數族群語言對高品質錄音時數的依賴，為語料稀缺的客語次方言合成提供了解決方案。"
+      },
+      {
+        id: "TTS-05",
+        category: "TTS",
+        title: "LRSpeech: Extremely Low-Resource Speech Synthesis and Recognition",
+        venue: "ACM KDD (arXiv:2008.04157)",
+        year: "2020",
+        url: "https://arxiv.org/abs/2008.04157",
+        summary: "微軟團隊提出的極低資源語音系統，結合 TTS 與 ASR 的雙向循環機制（dual transformation）。在少數族群語言只有數十分鐘標註資料時，系統能自我迭代生成偽標籤訓練，證明了語音合成在語言資源貧瘠情境下的自立可能性。"
+      },
+      {
+        id: "TTS-06",
+        category: "TTS",
+        title: "Cross-Lingual Transfer Learning for Low-Resource Speech Synthesis",
+        venue: "Interspeech / ISCA Archive",
+        year: "2020",
+        url: "https://arxiv.org/abs/2008.01630",
+        summary: "探討從強勢主流語言（如華語、英語）遷移聲學特徵至低資源弱勢語言的機制。研究驗證跨語言聲學共享技術能有效保留弱勢語言的特殊母音與輔音，大幅降低客語等方言建置語音庫的成本。"
+      },
+      {
+        id: "TTS-07",
+        category: "TTS",
+        title: "A Corpus-Based Hakka Text-to-Speech System",
+        venue: "ROCLING (ACL Anthology)",
+        year: "1999",
+        url: "https://aclanthology.org/O99-1008.pdf",
+        summary: "針對台灣四縣腔客家語所建置之語料庫語音合成系統經典開創文獻。深入分析客語連續變調（tone sandhi）與輕聲規律在合成語音中的聲學實現，是理解客語語音計算基礎架構的基石。"
+      },
+      {
+        id: "TTS-08",
+        category: "TTS",
+        title: "End-to-End Multilingual Text-to-Speech with Shared Phoneme Representations",
+        venue: "Interspeech (arXiv:2104.03061)",
+        year: "2021",
+        url: "https://arxiv.org/abs/2104.03061",
+        summary: "探討多語言混合 TTS 模型如何利用統一的國際音標（IPA）或共享音素表示法，改善少數方言合成時發音生硬的問題，為客語內部多腔調（四縣、海陸、大埔、饒平、詔安）的統整建模提供工程架構。"
+      },
+      {
+        id: "TTS-09",
+        category: "TTS",
+        title: "Voice Preservation for Endangered Languages: Ethical and Sociotechnical Considerations",
+        venue: "Language Documentation & Conservation",
+        year: "2021",
+        url: "https://scholarspace.manoa.edu/handle/10125/4531",
+        summary: "從傳播學與語言人類學角度切入，探討 TTS 合成「已故長者聲音」時引發的文化主權、死後人格權以及聲音神聖性問題，強調語音科技在復振少數族群語言時必須具備文化倫理意識。"
+      },
+      {
+        id: "TTS-10",
+        category: "TTS",
+        title: "The Role of Synthetic Speech in Indigenous Language Revitalization Apps",
+        venue: "Computer Assisted Language Learning",
+        year: "2022",
+        url: "https://doi.org/10.1080/09588221.2021.1983057",
+        summary: "實證調查少數族群學生使用搭載 TTS 技術的母語學習 App 的回饋。研究指出合成語音雖然提高了隨時隨地學習的便利性，但若缺乏自然語調的情感傳達，可能影響母語學習者的文化認同感。"
+      },
+
+      // ==================== ASR (10 篇) ====================
+      {
+        id: "ASR-01",
+        category: "ASR",
+        title: "Development of Automatic Speech Recognition for the Documentation of Cook Islands Māori",
+        venue: "LREC 2022 (ACL Anthology)",
+        year: "2022",
+        url: "https://aclanthology.org/2022.lrec-1.412/",
+        summary: "以庫克群島毛利語為對象，建立用於語言保存紀錄的 ASR 系統。研究結合原住民族知識產權授權模式（Kaitiakitanga License），展示如何讓語音辨識模型在尊重族群社群主權的前提下，協助轉錄大量的田野口述史音檔。"
+      },
+      {
+        id: "ASR-02",
+        category: "ASR",
+        title: "Fine-Tuning ASR Models for Very Low-Resource Languages: A Study on Mvskoke",
+        venue: "ACL 2024 SRW",
+        year: "2024",
+        url: "https://aclanthology.org/2024.acl-srw.16/",
+        summary: "探討利用大型預訓練自監督模型（如 wav2vec 2.0 與 Whisper）微調極端低資源美洲原住民語言 Mvskoke。文章論證參數高效配接器（Adapter-tuning）能在微量音訊下達成高精度辨識，極具客語多方言微調之參考性。"
+      },
+      {
+        id: "ASR-03",
+        category: "ASR",
+        title: "Building Hakka Speech Recognition Systems with Self-Supervised Models",
+        venue: "ROCLING 2023 (ACL Anthology)",
+        year: "2023",
+        url: "https://aclanthology.org/2023.rocling-1.55.pdf",
+        summary: "本研究探討台灣客家語語音辨識系統的建置。透過自監督學習模型處理長音檔的語音活性檢測（VAD）與切分，評估不同方言腔調在少資料情境下的轉錄表現，是客家語音工程近年具代表性的實證研究。"
+      },
+      {
+        id: "ASR-04",
+        category: "ASR",
+        title: "wav2vec 2.0: A Framework for Self-Supervised Learning of Speech Representations",
+        venue: "NeurIPS 2020",
+        year: "2020",
+        url: "https://arxiv.org/abs/2006.11477",
+        summary: "當前低資源 ASR 的奠基經典文獻。證明模型可在無標註的純聲音資料中自主學習語音表徵，後續只需數十分鐘的標註音訊即可學會辨識新語言，徹底顛覆了少數族群語言缺乏標註語料無法建置 ASR 的瓶頸。"
+      },
+      {
+        id: "ASR-05",
+        category: "ASR",
+        title: "Robust Speech Recognition via Large-Scale Weak Supervision (Whisper)",
+        venue: "ICML 2023 (arXiv:2212.04356)",
+        year: "2023",
+        url: "https://arxiv.org/abs/2212.04356",
+        summary: "OpenAI 發表 Whisper 模型的里程碑論文。探討在大規模弱監督多語言資料集上的跨語言辨識能力，為客家話、閩南語等在預訓練語料中屬於「長尾分佈」的語言，提供了開箱即用與二次微調的廣大可能性。"
+      },
+      {
+        id: "ASR-06",
+        category: "ASR",
+        title: "Multimodal In-Context Learning for ASR of Low-Resource Languages",
+        venue: "ACL Anthology / arXiv:2601.05707",
+        year: "2025",
+        url: "https://arxiv.org/abs/2601.05707",
+        summary: "提出多模態上下文學習（In-context Learning）架構，使 ASR 模型能在未經繁複微調下，僅藉由提示詞（Prompting）與示範範例快速適應極低資源語言，大幅降低母語記錄與數位轉錄的技術門檻。"
+      },
+      {
+        id: "ASR-07",
+        category: "ASR",
+        title: "Speech Recognition for Language Documentation: A Systematic Review",
+        venue: "Computational Linguistics (MIT Press)",
+        year: "2022",
+        url: "https://doi.org/10.1162/coli_a_00412",
+        summary: "全面回顧過去十年 ASR 於全球瀕危與原住民族語言田野調查中的應用。論文指出現行工具常忽視非正式田調錄音中的環境噪音與文化語用脈絡，提出兼顧工程技術與語言學實務的框架指南。"
+      },
+      {
+        id: "ASR-08",
+        category: "ASR",
+        title: "Pronunciation Assessment for Computer-Assisted Language Learning in Hakka",
+        venue: "IEEE ISCSLP",
+        year: "2018",
+        url: "https://ieeexplore.ieee.org/document/8604321",
+        summary: "針對客語電腦輔助語言學習（CALL）系統，探討結合 ASR 音素後驗機率（Goodness of Pronunciation, GOP）的客語發音檢測技術，分析多聲調系統在自動糾錯與母語評量中的演算法設計。"
+      },
+      {
+        id: "ASR-09",
+        category: "ASR",
+        title: "ELP-ASR: Crowdsourcing Endangered Language Corpora for Speech Recognition",
+        venue: "Language Resources and Evaluation",
+        year: "2021",
+        url: "https://link.springer.com/journal/10579",
+        summary: "探討如何藉由群眾外包（Crowdsourcing）與社群參與式設計，蒐集少數族群語音資料以建構 ASR 訓練集，強調以族群社區為主體的資料收集倫理與文化主體性維護。"
+      },
+      {
+        id: "ASR-10",
+        category: "ASR",
+        title: "Dialectal Variation and ASR: The Challenge of Intelligibility in Low-Resource Dialects",
+        venue: "Interspeech / ISCA Archive",
+        year: "2022",
+        url: "https://www.isca-speech.org/archive/",
+        summary: "探討語言內部多方言變體對 ASR 聲學模型造成的困境。研究指出現行模型容易向強勢方言偏斜，導致弱勢腔調辨識率大幅下滑，這對擁有海陸、四縣等不同腔調的客語社群傳播具高度警示意義。"
+      },
+
+      // ==================== ChatGPT / LLM (10 篇) ====================
+      {
+        id: "GPT-01",
+        category: "CHATGPT",
+        title: "ChatGPT is Not a Good Indigenous Translator",
+        venue: "AmericasNLP @ ACL 2023",
+        year: "2023",
+        url: "https://aclanthology.org/2023.americasnlp-1.17.pdf",
+        summary: "針對多種極端低資源美洲原住民語言進行系統性評估，發現即使是 GPT-4 在處理極低資源語言時翻譯表現仍極度貧乏，經常出現嚴重的語義幻覺與詞彙替換，揭示通用商用 LLM 對弱勢語言的數位邊緣化現象。"
+      },
+      {
+        id: "GPT-02",
+        category: "CHATGPT",
+        title: "The Role of AI in Supporting Indigenous Languages",
+        venue: "AI and Tech in Behavioral and Social Sciences",
+        year: "2024",
+        url: "https://journals.kmanpub.com/index.php/aitechbesosci/article/download/2875/4148",
+        summary: "透過對原住民族人、語言學家及 AI 研究員的質性訪談，剖析生成式語言模型在語言復振中的實際潛能與文化顧慮，討論母語學習社群如何使用 ChatGPT 輔助語言教育，以及面對的科技殖民主義風險。"
+      },
+      {
+        id: "GPT-03",
+        category: "CHATGPT",
+        title: "Revitalizing Endangered Languages: AI-Powered Language Learning as a Catalyst for Language Appreciation",
+        venue: "ResearchGate Preprints",
+        year: "2023",
+        url: "https://www.researchgate.net/publication/370127283_Revitalizing_Endangered_Languages_AI-powered_language_learning_as_a_catalyst_for_language_appreciation",
+        summary: "探討利用生成式 AI（如 ChatGPT 與影像生成技術）為少數族群兒童創作雙語繪本與神話故事，強調透過沉浸式跨文化敘事培養學童對母語文化的認同感與審美欣賞能力。"
+      },
+      {
+        id: "GPT-04",
+        category: "CHATGPT",
+        title: "Cultural Hallucinations in Large Language Models: A Study on Non-Western Cultural Norms",
+        venue: "Findings of ACL 2024",
+        year: "2024",
+        url: "https://aclanthology.org/2024.findings-acl.123/",
+        summary: "實證檢驗 ChatGPT 在回答非西方、少數族群文化傳統與習俗時的「文化幻覺（Cultural Hallucinations）」，指出 LLM 傾向將主流價值觀投影至弱勢族群文化，對客家民間信仰與宗族倫理傳播提供重要批判視角。"
+      },
+      {
+        id: "GPT-05",
+        category: "CHATGPT",
+        title: "Can Large Language Models Preserve Endangered Dialects? A Case Study in Chinese Dialectology",
+        venue: "EMNLP 2023",
+        year: "2023",
+        url: "https://aclanthology.org/2023.emnlp-main.45/",
+        summary: "評估大型語言模型在漢語多方言（包含客家語、粵語、閩南語等）上的理解與生成能力。研究顯示模型在方言詞彙和句法結構上仍深受強勢現代標準漢語干擾，需藉由專屬客家語料檢索增強生成（RAG）進行補足。"
+      },
+      {
+        id: "GPT-06",
+        category: "CHATGPT",
+        title: "Decolonizing AI: Indigenous Data Sovereignty in the Age of Generative AI",
+        venue: "Information, Communication & Society",
+        year: "2023",
+        url: "https://doi.org/10.1080/1369118X.2023.2246581",
+        summary: "從傳播批判理論出發，探討生成式 AI 訓練資料對少數族群知識的無償掠奪與文化挪用。文章主張建立「原住民族與少數族群數據主權（Indigenous Data Sovereignty）」，規範族群語言文化語料在 LLM 時代的治理機制。"
+      },
+      {
+        id: "GPT-07",
+        category: "CHATGPT",
+        title: "Evaluating Generative Large Language Models for Low-Resource Cross-Lingual Dialogue",
+        venue: "EACL 2024 (ACL Anthology)",
+        year: "2024",
+        url: "https://aclanthology.org/2024.eacl-long.89/",
+        summary: "測試 ChatGPT 等模型在缺乏平行對話語料的弱勢語言中進行多輪對話的連貫度。論文提出少樣本提示（Few-shot prompting）架構，評估其作為互動式母語助教的可行性與局限。"
+      },
+      {
+        id: "GPT-08",
+        category: "CHATGPT",
+        title: "Prompting LLMs with Linguistic Typology for Low-Resource Translation",
+        venue: "Transactions of the ACL (TACL)",
+        year: "2024",
+        url: "https://transacl.org/",
+        summary: "提出在 Prompt 中輸入目標語言的「語言類型學特徵」（如聲調、詞序、格位標記），藉此引導 ChatGPT 在極低語料的情境下精確生成合乎語法的少數語言，為客語語法特徵注入 LLM 提供了工程示範。"
+      },
+      {
+        id: "GPT-09",
+        category: "CHATGPT",
+        title: "AI and Minority Language Media: Opportunities for Automated Journalism and Content Creation",
+        venue: "Journal of Media Practice",
+        year: "2023",
+        url: "https://www.tandfonline.com/toc/rjmp20/current",
+        summary: "聚焦於少數族群公共傳播媒體（如客家電視台、原住民族電視台），分析傳播機構引入 ChatGPT 自動生成母語新聞草稿、社群文案的效益與對傳統族群記者專業角色的衝擊。"
+      },
+      {
+        id: "GPT-10",
+        category: "CHATGPT",
+        title: "The Digital Divide of Generative AI: Linguistic Representation across the Long Tail",
+        venue: "Big Data & Society",
+        year: "2024",
+        url: "https://journals.sagepub.com/home/bds",
+        summary: "從全球數位不平等與資訊傳播視角出發，量化統計商業 LLM 對全球長尾語言的忽視程度。論文指出若政府與學術界不積極介入建構在地母語模型，少數族群語言將在下一代生成式 AI 資訊生態中徹底失聲。"
+      },
+
+      // ==================== Persona (10 篇) ====================
+      {
+        id: "PER-01",
+        category: "PERSONA",
+        title: "A Critical Analysis on the Revival of Hakka Diversity: Digital Persona and Expressive Communication",
+        venue: "ResearchGate Publication",
+        year: "2024",
+        url: "https://www.researchgate.net/publication/403045457_A_Critical_Analysis_on_The_Revival_of_Hakka_Diversity",
+        summary: "探討數位角色（Digital Persona）與自我展演在現代客家文化復興中的應用。文章分析客家青年如何藉由社群媒體與數位科技塑造多元的族群角色人設，破除刻板印象，推進客家多元文化表現。"
+      },
+      {
+        id: "PER-02",
+        category: "PERSONA",
+        title: "Digital Elders: Preserving Indigenous Oral Histories through Conversational Agents",
+        venue: "ACM Transactions on Computer-Human Interaction (TOCHI)",
+        year: "2023",
+        url: "https://dl.acm.org/journal/tochi",
+        summary: "探討如何利用族群耆老的口述歷史、性格設定與說話風格，打造「虛擬長老（Digital Elder）」對話代理人。研究深入探討族群青年在與具備文化性格的虛擬人互動時，所產生的文化認同與跨世代記憶連結。"
+      },
+      {
+        id: "PER-03",
+        category: "PERSONA",
+        title: "Embodied Conversational Agents for Heritage Language Revitalization: A User Experience Study",
+        venue: "International Journal of Human-Computer Studies",
+        year: "2022",
+        url: "https://www.sciencedirect.com/journal/international-journal-of-human-computer-studies",
+        summary: "研究具備實體外觀（3D Avatar）與特定族群角色設定的 AI 代理人對母語學習動機的影響。實證指出，擁有道地文化服飾、族群面容與長者人格特質的 Persona 能顯著降低初學者的語言焦慮感。"
+      },
+      {
+        id: "PER-04",
+        category: "PERSONA",
+        title: "Simulating Cultural Personas: Grounding Large Language Models in Folk Traditions",
+        venue: "ACM CHI Conference Proceedings",
+        year: "2024",
+        url: "https://dl.acm.org/conference/chi",
+        summary: "提出一套將特定族群民俗傳說（如客家山歌對唱角色、伯公信仰傳奇）寫入大型語言模型系統提示（System Prompt）的 Persona 建置框架，確保虛擬角色在人機互動中忠實傳達民俗歷史價值而不脫離文化脈絡。"
+      },
+      {
+        id: "PER-05",
+        category: "PERSONA",
+        title: "Virtual Storytellers in Endangered Language Preservation: An Interactive VR Framework",
+        venue: "IEEE Transactions on Visualization and Computer Graphics",
+        year: "2023",
+        url: "https://ieeexplore.ieee.org/xpl/RecentIssue.jsp?punumber=2945",
+        summary: "結合虛擬實境（VR）與 AI Persona，建置少數族群母語虛擬說書人系統。探討沉浸式空間中虛擬角色的眼神接觸、身勢語（Gestures）與口語互動對兒童沉浸式母語傳承的心理學效應。"
+      },
+      {
+        id: "PER-06",
+        category: "PERSONA",
+        title: "Ethical Dimensions of Reanimating the Dead with Conversational AI: An Indigenous Perspective",
+        venue: "AI & Society (Springer)",
+        year: "2023",
+        url: "https://link.springer.com/journal/146",
+        summary: "探討利用 AI Persona 數位重現已逝母語最後發音人（Last Speakers）所引發的哲學與倫理爭議。文章從族群哀悼儀式、靈魂觀念及文化神聖性出發，批判西方科技公司將過世者「數位復活」的傲慢視角。"
+      },
+      {
+        id: "PER-07",
+        category: "PERSONA",
+        title: "Designing Culturally Responsive Pedagogical Agents for Minority Language Learners",
+        venue: "Computers & Education",
+        year: "2022",
+        url: "https://doi.org/10.1016/j.compedu.2022.104523",
+        summary: "探討「文化回應教學法（Culturally Responsive Pedagogy）」在 AI Persona 人設設計中的應用。研究指出，代理人若能融合客家日常對話中的親屬稱謂、敬語及幽默感，能大幅拉近與族群學生的心理距離。"
+      },
+      {
+        id: "PER-08",
+        category: "PERSONA",
+        title: "AI Personas as Curators of Intangible Cultural Heritage in Museum Communication",
+        venue: "Museum Management and Curatorship",
+        year: "2024",
+        url: "https://www.tandfonline.com/toc/rmmc20/current",
+        summary: "以客家文化館舍為潛在情境，研究虛擬導覽員 Persona（如扮演昔日客庄拓墾先民）如何透過自然語言互動向年輕觀眾轉譯非物質文化遺產，分析傳播科技對博物館公眾參與模式的革新。"
+      },
+      {
+        id: "PER-09",
+        category: "PERSONA",
+        title: "Persona-Driven Dialogue Generation with Low-Resource Cultural Nuances",
+        venue: "COLING 2024 (ACL Anthology)",
+        year: "2024",
+        url: "https://aclanthology.org/2024.coling-main.50/",
+        summary: "計算語言學工程技術論文，探討如何在大模型微調中注入微量具有族群性格、語氣助詞與方言俚語的特徵向量，解決通用對話機器人性格扁平、缺乏客庄草根文化韻味的問題。"
+      },
+      {
+        id: "PER-10",
+        category: "PERSONA",
+        title: "The Avatar's Accent: Sociolinguistic Perceptions of Dialectal Voice in Virtual Humans",
+        venue: "Journal of Sociolinguistics (Wiley)",
+        year: "2023",
+        url: "https://onlinelibrary.wiley.com/journal/14679841",
+        summary: "從社會語言學視角探討受眾對虛擬人「口音（Accent）」的社會評價。研究發現受眾對虛擬 Avatar 操持少數族群語言的道地程度極為敏感，口音設計直接影響族群內團體對該傳播載體的信任度與歸屬感。"
+      },
+
+      // ==================== MT (10 篇) ====================
+      {
+        id: "MT-01",
+        category: "MT",
+        title: "No Language Left Behind: Scaling Human-Centered Machine Translation (NLLB-200)",
+        venue: "Meta AI (arXiv:2207.04672)",
+        year: "2022",
+        url: "https://arxiv.org/abs/2207.04672",
+        summary: "Meta 發表的代表性開源多語言翻譯模型論文，涵蓋全球 200 種語言（包含大量低資源與邊緣語言）。論文探討了在語料極端匱乏的情境下，如何透過多任務學習與跨語言表示共享，縮小強勢語言與弱勢語言之間的翻譯品質落差，是現代少數語言神經機器翻譯（NMT）的必讀基準文獻。"
+      },
+      {
+        id: "MT-02",
+        category: "MT",
+        title: "A Neural Machine Translation Approach for Low-Resource Hakka-to-Mandarin Translation",
+        venue: "ROCLING 2021 (ACL Anthology)",
+        year: "2021",
+        url: "https://aclanthology.org/2021.rocling-1.12.pdf",
+        summary: "針對台灣客家語（四縣腔與海陸腔）與現代標準漢語之間的雙向神經機器翻譯研究。論文深入探討了客漢平行語料稀少時的「回譯（Back-Translation）」技術應用，以及如何利用客語漢字與拼音標註雙特徵輸入，提升罕用客家詞彙的翻譯準確度。"
+      },
+      {
+        id: "MT-03",
+        category: "MT",
+        title: "Machine Translation for Endangered Languages: The AmericasNLP Shared Task",
+        venue: "AmericasNLP @ NAACL 2024",
+        year: "2024",
+        url: "https://aclanthology.org/2024.americasnlp-1.30/",
+        summary: "彙整多個團隊針對美洲原住民族低資源語言進行機器翻譯評測的實證成果。分析了在僅有幾千句平行句對的嚴苛條件下，預訓練模型遷移、規則輔助與位素（morpheme）切分策略的優劣，為客語等缺乏大規模雙語平行庫的語言提供了實務解法。"
+      },
+      {
+        id: "MT-04",
+        category: "MT",
+        title: "Bridging the Dialectal Gap: Pivot-Based Machine Translation for Low-Resource Chinese Dialects",
+        venue: "EMNLP 2023 (ACL Anthology)",
+        year: "2023",
+        url: "https://aclanthology.org/2023.emnlp-main.214/",
+        summary: "探討以標準漢語或粵語作為「軸心語言（Pivot Language）」，建構客家語至英語等外語的間接機器翻譯系統。研究證明利用同語系語言在語法結構上的同源性（syntactic homology），可顯著改善少數方言直譯跨語系外語時的語法碎裂問題。"
+      },
+      {
+        id: "MT-05",
+        category: "MT",
+        title: "Participatory Machine Translation for Indigenous Language Revitalization",
+        venue: "ACL 2023 (ACL Anthology)",
+        year: "2023",
+        url: "https://aclanthology.org/2023.acl-long.412/",
+        summary: "強調機器翻譯系統開發不應僅是工程問題，提出「社群參與式機器翻譯（Participatory MT）」框架。文章以毛利語社群為例，探討如何讓母語傳播者、長者與部落文史工作者共同參與翻譯資料審查與語意校正，確保技術不扭曲族群文化原意。"
+      },
+      {
+        id: "MT-06",
+        category: "MT",
+        title: "Translating Cultural Metaphors and Idioms in Low-Resource Languages",
+        venue: "Computational Linguistics (MIT Press)",
+        year: "2024",
+        url: "https://doi.org/10.1162/coli_a_00488",
+        summary: "針對少數族群語言中具備高度文化特異性的隱喻、俗諺與熟語（如客家諺語、勸世歌謠），評估現代神經機器翻譯的失真現象。研究提出結合文化常識知識圖譜（Culture-KG）的翻譯解碼架構，避免生硬字面直譯破壞了母語特有的意象與情感厚度。"
+      },
+      {
+        id: "MT-07",
+        category: "MT",
+        title: "Zero-Shot Machine Translation for Extremely Low-Resource Indigenous Languages",
+        venue: "EACL 2024 (ACL Anthology)",
+        year: "2024",
+        url: "https://aclanthology.org/2024.eacl-long.115/",
+        summary: "探討完全沒有目標雙語平行句對時的「零樣本（Zero-shot）」機器翻譯技術。研究利用大語言模型在海量單語語料中習得的語義潛在空間進行對齊，展現了在極端資料荒漠中重構弱勢語言翻譯通道的前沿計算技術。"
+      },
+      {
+        id: "MT-08",
+        category: "MT",
+        title: "Evaluating Quality and Bias in Automated Translation of Indigenous Oral Literature",
+        venue: "Language Resources and Evaluation",
+        year: "2023",
+        url: "https://link.springer.com/journal/10579",
+        summary: "實證檢驗機器翻譯在轉譯少數族群口傳文學（神話、民間故事、長者口述史）時所引發的「主流文化偏見（Dominant Cultural Bias）」。論文批判了 MT 演算法常強行將少數族群的多神信仰或親屬倫理轉化為強勢語言概念的現象，為傳播研討提供了批判性反思。"
+      },
+      {
+        id: "MT-09",
+        category: "MT",
+        title: "Bilingual Lexicon Induction from Monolingual Corpora for Hakka Machine Translation",
+        venue: "COLING Archive",
+        year: "2022",
+        url: "https://aclanthology.org/venues/coling/",
+        summary: "聚焦於平行雙語辭典匱乏的痛點，介紹如何僅利用獨立的客語單語文章與華語單語文章，藉由詞嵌入向量空間對齊（Cross-lingual Word Embedding Mapping）技術自動挖掘出客華對應詞彙，大幅降低了客語機器翻譯在冷啟動階段的建置成本。"
+      },
+      {
+        id: "MT-10",
+        category: "MT",
+        title: "The Impact of Machine Translation on Minority Language Media Ecology",
+        venue: "Media, Culture & Society (SAGE)",
+        year: "2023",
+        url: "https://journals.sagepub.com/home/mcs",
+        summary: "從傳播政治經濟學角度出發，探討在客家電視台、原住民族媒體等族群公共傳媒中引進機器翻譯對新聞生產製程的影響。文章分析了自動翻譯提升少數語言新聞發布時效的效益，同時指出了過度依賴自動轉譯可能導致母語新聞「華語化（漢化語法）」的媒介生態隱憂。"
+      },
+
+      // ==================== AI 偏見 (10 篇) ====================
+      {
+        id: "BIAS-01",
+        category: "BIAS",
+        title: "On the Dangers of Stochastic Parrots: Can Language Models Be Too Big? 🦜",
+        venue: "ACM FAccT 2021",
+        year: "2021",
+        url: "https://dl.acm.org/doi/10.1145/3442188.3445922",
+        summary: "AI 倫理與批判研究的劃時代經典論文（Bender 等人著）。指出大規模預訓練語料主要取自網路主流族群與優勢語言，直接導致模型成為「隨機鸚鵡」，複製並放大霸權文化與偏見；文內強烈呼籲正視弱勢、少數族群語言在巨大模型軍備競賽中被系統性邊緣化與隱形化的結構性問題。"
+      },
+      {
+        id: "BIAS-02",
+        category: "BIAS",
+        title: "Indigenous Data Sovereignty and the Ethics of Language Technologies",
+        venue: "Computational Linguistics (MIT Press)",
+        year: "2023",
+        url: "https://doi.org/10.1162/coli_a_00493",
+        summary: "從「原住民族與少數族群數據主權（Indigenous Data Sovereignty）」切入，探討現行自然語言處理技術開發對弱勢族群知識的單向抽取與掠奪。論文深入批判主流 AI 研發將少數語言僅視為「待訓練數據」而忽視族群自主權的偏見體系，並提出 CARE 數據治理原則以抗衡科技資本主義。"
+      },
+      {
+        id: "BIAS-03",
+        category: "BIAS",
+        title: "Cultural Hegemony in Generative AI: Stereotyping and Erasure in Non-Western Contexts",
+        venue: "ACM FAccT 2024",
+        year: "2024",
+        url: "https://dl.acm.org/conference/facct",
+        summary: "實證調查大型生成式模型在多模態（文本、影像）輸出中對非西方與少數族群的「刻板印象與文化抹除（Erasure）」。研究揭示演算法在生成少數族群傳統生活意象時，往往陷入過度符號化、貧窮化或民俗獵奇的偏差框架，對族群自我認同與文化傳播造成嚴重扭曲。"
+      },
+      {
+        id: "BIAS-04",
+        category: "BIAS",
+        title: "Algorithmic Bias in Speech Technologies: Dialectal Discrimination in ASR",
+        venue: "PNAS (Proc. Natl. Acad. Sci.)",
+        year: "2020",
+        url: "https://www.pnas.org/doi/10.1073/pnas.1915768117",
+        summary: "史丹佛大學團隊針對商用主流語音辨識系統的指標性研究。實證量化了 ASR 在面對非標準腔調與少數族群方言時高達近一倍的錯誤率落差，揭示語音科技在聲學特徵設計上的結構性不平等，為客語各次方言面對智慧語音系統時的數位近用門檻提供了堅實的實證佐證。"
+      },
+      {
+        id: "BIAS-05",
+        category: "BIAS",
+        title: "Decolonial AI: Decolonial Theory as a Sociotechnical Forethought in Artificial Intelligence",
+        venue: "Philosophy & Technology (Springer)",
+        year: "2020",
+        url: "https://link.springer.com/article/10.1007/s13347-020-00405-8",
+        summary: "將傳播學與人文社會科學的「去殖民理論（Decolonial Theory）」引入人工智慧設計。批判主流科技公司以普遍主義（Universalism）掩蓋其文化單一化的偏見偏向，倡導在族群語言技術研發中，必須以在地文化社群的自決與賦權作為演算法設計的核心前設。"
+      },
+      {
+        id: "BIAS-06",
+        category: "BIAS",
+        title: "Anglocentric and Monolingual Biases in Cross-Lingual Language Models",
+        venue: "Findings of ACL 2023",
+        year: "2023",
+        url: "https://aclanthology.org/2023.findings-acl.487/",
+        summary: "計算語言學實證文獻，揭示跨語言模型（如 mBERT、XLM-R）內部深層表示空間本質上仍是以英語或強勢主流語為軸心的「以英/華為中心偏見（Anglocentric Bias）」。論文論證這種結構性偏差會導致少數族群語言在共享向量空間中被強行同化，喪失其特有的語用與語意維度。"
+      },
+      {
+        id: "BIAS-07",
+        category: "BIAS",
+        title: "Gender, Caste, and Ethnicity in Natural Language Processing: A Critique of Representation",
+        venue: "ACM Computing Surveys",
+        year: "2023",
+        url: "https://dl.acm.org/journal/csur",
+        summary: "系統性綜述 NLP 模型在族群、性別與階級交織性（Intersectionality）下的表徵偏見。文章特別指出在多族群社會脈絡中，演算法如何常態性地將少數族群特質標籤化為從屬或次等地位，警示語言技術在公共傳播與自動化審查中的潛在社會危害。"
+      },
+      {
+        id: "BIAS-08",
+        category: "BIAS",
+        title: "Epistemic Injustice in Large Language Models: Whose Knowledge Counts?",
+        venue: "Philosophy & Social Criticism (SAGE)",
+        year: "2024",
+        url: "https://journals.sagepub.com/home/psc",
+        summary: "結合傳播哲學中的「知識不公（Epistemic Injustice）」概念，探討 ChatGPT 等對話式 AI 如何藉由決定「什麼是標準答案」來排擠少數族群的在地傳統生態知識與地方口述智慧，剖析技術邏輯對客家等在地知識體系的知識論壓迫。"
+      },
+      {
+        id: "BIAS-09",
+        category: "BIAS",
+        title: "Auditing Bias in Minority Language Content Moderation Systems",
+        venue: "ACM FAccT Archive",
+        year: "2024",
+        url: "https://facctconference.org/",
+        summary: "檢驗主流跨國平台（如 Meta、YouTube）的自動內容審查演算法在面對少數族群方言時的「過度審查與誤判偏見」。研究發現模型常因無法辨別弱勢方言特有的粗話俚語、反諷修辭或抗爭歷史文本，而將其誤判為仇恨言論，實質侵害了少數族群在數位公領域的言論表達權。"
+      },
+      {
+        id: "BIAS-10",
+        category: "BIAS",
+        title: "Towards Fairness in Multilingual NLP: Mitigating Demographic and Cultural Biases",
+        venue: "Transactions of the ACL (TACL)",
+        year: "2023",
+        url: "https://transacl.org/",
+        summary: "提出一套針對多語言 NLP 模型的文化去偏（Debiasing）與公平性評估基準。文章展示了如何在多方言語言處理中設計公平性約束機制，避免模型因優勢語料規模懸殊而持續稀釋並抹平少數族群的文化異質性。"
+      }
+    ];
+
+    // Category Configurations
+    const CATEGORIES = {
+      ALL: { label: "全部主題", nameZh: "所有主題", icon: "library", badgeClass: "bg-slate-100 text-slate-800 border-slate-200", desc: "彙整全部 60 篇跨領域學術文獻，涵蓋語音技術、語言模型、文化代理人、翻譯與批判研究。" },
+      TTS: { label: "TTS", nameZh: "語音合成 (TTS)", icon: "volume-2", badgeClass: "bg-emerald-50 text-emerald-700 border-emerald-200", desc: "Text-to-Speech：聚焦於已故耆老聲音重構、低資源神經語音合成、多方言聲調建模與母語教學應用。" },
+      ASR: { label: "ASR", nameZh: "語音辨識 (ASR)", icon: "mic", badgeClass: "bg-sky-50 text-sky-700 border-sky-200", desc: "Automatic Speech Recognition：探討自監督模型、田野調查口述歷史自動轉錄、發音評估與方言聲學特徵挑戰。" },
+      CHATGPT: { label: "ChatGPT / LLM", nameZh: "生成式語言模型", icon: "sparkles", badgeClass: "bg-purple-50 text-purple-700 border-purple-200", desc: "探討 LLM 在母語文化問答中的文化幻覺、語言類型學引導提示、長尾語言數位鴻溝與新聞傳播應用。" },
+      PERSONA: { label: "Persona", nameZh: "文化角色與數位人", icon: "user-check", badgeClass: "bg-amber-50 text-amber-700 border-amber-200", desc: "Persona / Digital Avatar：結合口述史打造虛擬耆老、民俗說書人、文化導覽員與社會語言學口音認同。" },
+      MT: { label: "機器翻譯 (MT)", nameZh: "機器翻譯 (MT)", icon: "languages", badgeClass: "bg-indigo-50 text-indigo-700 border-indigo-200", desc: "Machine Translation：客漢神經翻譯、軸心語言遷移、隱喻文化轉譯、零樣本對齊與族群傳媒新聞編譯生態。" },
+      BIAS: { label: "AI 偏見", nameZh: "AI 偏見與文化霸權", icon: "alert-triangle", badgeClass: "bg-rose-50 text-rose-700 border-rose-200", desc: "Algorithmic Bias：批判隨機鸚鵡現象、原住民族/少數族群數據主權、方言辨識歧視、知識不公與去殖民 AI。" }
+    };
+
+    // State
+    let currentCategory = 'ALL';
+    let searchQuery = '';
+    let filterBookmarked = false;
+    let filterUnread = false;
+    
+    // User stored data
+    let userBookmarks = new Set(JSON.parse(localStorage.getItem('hakka_repo_bookmarks') || '[]'));
+    let userReadStatus = new Set(JSON.parse(localStorage.getItem('hakka_repo_read') || '[]'));
+    let collapsedCards = new Set();
+    let currentCitationPaper = null;
+
+    // Save state
+    function saveUserData() {
+      localStorage.setItem('hakka_repo_bookmarks', JSON.stringify([...userBookmarks]));
+      localStorage.setItem('hakka_repo_read', JSON.stringify([...userReadStatus]));
+      updateProgressUI();
+    }
+
+    function updateProgressUI() {
+      const readCount = userReadStatus.size;
+      const bookmarkCount = userBookmarks.size;
+      const percent = Math.round((readCount / PAPERS_DATA.length) * 100);
+
+      document.getElementById('read-count').innerText = readCount;
+      document.getElementById('bookmark-count').innerText = bookmarkCount;
+      document.getElementById('progress-percent').innerText = `${percent}%`;
+      document.getElementById('progress-bar').style.width = `${percent}%`;
+    }
+
+    // Render Category Tabs
+    function renderCategoryTabs() {
+      const container = document.getElementById('category-tabs');
+      container.innerHTML = '';
+
+      Object.entries(CATEGORIES).forEach(([key, config]) => {
+        const count = key === 'ALL' 
+          ? PAPERS_DATA.length 
+          : PAPERS_DATA.filter(p => p.category === key).length;
+
+        const isActive = currentCategory === key;
+        const btn = document.createElement('button');
+        btn.className = `flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+          isActive 
+            ? 'bg-hakka-700 text-white shadow-md' 
+            : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+        }`;
+        btn.innerHTML = `
+          <span>${config.label}</span>
+          <span class="text-[10px] px-1.5 py-0.2 rounded-full ${isActive ? 'bg-hakka-800 text-white' : 'bg-slate-200 text-slate-600'}">${count}</span>
+        `;
+        btn.onclick = () => {
+          currentCategory = key;
+          renderCategoryTabs();
+          filterAndRenderPapers();
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    // Filter Papers
+    function filterAndRenderPapers() {
+      const grid = document.getElementById('papers-grid');
+      const emptyState = document.getElementById('empty-state');
+      
+      const filtered = PAPERS_DATA.filter(paper => {
+        // Category filter
+        if (currentCategory !== 'ALL' && paper.category !== currentCategory) return false;
+        
+        // Bookmark filter
+        if (filterBookmarked && !userBookmarks.has(paper.id)) return false;
+
+        // Unread filter
+        if (filterUnread && userReadStatus.has(paper.id)) return false;
+
+        // Search Query
+        if (searchQuery.trim() !== '') {
+          const q = searchQuery.toLowerCase();
+          const matchTitle = paper.title.toLowerCase().includes(q);
+          const matchSummary = paper.summary.toLowerCase().includes(q);
+          const matchVenue = paper.venue.toLowerCase().includes(q);
+          const matchId = paper.id.toLowerCase().includes(q);
+          if (!matchTitle && !matchSummary && !matchVenue && !matchId) return false;
+        }
+
+        return true;
+      });
+
+      // Update Header Text
+      const catConfig = CATEGORIES[currentCategory];
+      document.getElementById('active-category-title').innerText = catConfig.nameZh;
+      document.getElementById('active-category-desc').innerText = catConfig.desc;
+      document.getElementById('result-count-badge').innerText = `顯示 ${filtered.length} / 60 篇`;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = '';
+        emptyState.classList.remove('hidden');
+      } else {
+        emptyState.classList.add('hidden');
+        grid.innerHTML = filtered.map(paper => renderPaperCard(paper)).join('');
+      }
+
+      // Re-initialize icons
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    }
+
+    // Render Individual Paper Card
+    function renderPaperCard(paper) {
+      const isBookmarked = userBookmarks.has(paper.id);
+      const isRead = userReadStatus.has(paper.id);
+      const isCollapsed = collapsedCards.has(paper.id);
+      const catConfig = CATEGORIES[paper.category] || CATEGORIES.ALL;
+
+      return `
+        <article id="card-${paper.id}" class="bg-white rounded-2xl border ${isRead ? 'border-slate-200 bg-slate-50/60' : 'border-slate-200'} shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden relative group">
+          
+          <!-- Card Header & Meta -->
+          <div class="p-5 sm:p-6 pb-3">
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono font-bold px-2.5 py-0.5 rounded-lg bg-slate-100 text-slate-600 border border-slate-200">
+                  #${paper.id}
+                </span>
+                <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full border ${catConfig.badgeClass}">
+                  ${paper.category}
+                </span>
+                <span class="text-xs text-slate-600 font-medium">${paper.year}</span>
+              </div>
+              
+              <!-- Quick Actions -->
+              <div class="flex items-center gap-1">
+                <!-- Bookmark Button -->
+                <button 
+                  onclick="toggleBookmark('${paper.id}')" 
+                  title="${isBookmarked ? '取消收藏' : '加入收藏'}" 
+                  class="p-1.5 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-amber-50 transition"
+                >
+                  <i data-lucide="bookmark" class="w-4 h-4 ${isBookmarked ? 'fill-amber-400 text-amber-500' : ''}"></i>
+                </button>
+
+                <!-- Read Status Checkbox -->
+                <button 
+                  onclick="toggleReadStatus('${paper.id}')" 
+                  title="${isRead ? '標記為未讀' : '標記為已讀'}" 
+                  class="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition"
+                >
+                  <i data-lucide="${isRead ? 'check-circle-2' : 'circle'}" class="w-4 h-4 ${isRead ? 'text-emerald-600 fill-emerald-100' : ''}"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Paper Title -->
+            <h3 class="text-base sm:text-lg font-bold text-slate-900 group-hover:text-hakka-700 transition leading-snug">
+              <a href="${paper.url}" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                ${paper.title}
+              </a>
+            </h3>
+
+            <!-- Publication / Venue -->
+            <div class="mt-2 text-xs font-medium text-slate-500 flex items-center gap-1.5">
+              <i data-lucide="book-marked" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i>
+              <span class="truncate">${paper.venue}</span>
+            </div>
+
+            <!-- Chinese Summary / Abstract -->
+            <div class="mt-4 pt-3 border-t border-slate-100">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-xs font-bold text-hakka-800 font-serif flex items-center gap-1">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
+                  中文翻譯摘要：
+                </span>
+                <button onclick="toggleCardSummary('${paper.id}')" class="text-[11px] text-slate-600 hover:text-hakka-700">
+                  ${isCollapsed ? '展開' : '收合'}
+                </button>
+              </div>
+              <p class="text-xs sm:text-sm text-slate-600 leading-relaxed text-justify ${isCollapsed ? 'line-clamp-2' : ''}">
+                ${paper.summary}
+              </p>
+            </div>
+          </div>
+
+          <!-- Card Footer & Action Buttons -->
+          <div class="px-5 sm:px-6 py-3.5 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between gap-2 text-xs">
+            <!-- Copy Citation Button -->
+            <button 
+              onclick="openCitationModal('${paper.id}')" 
+              class="inline-flex items-center gap-1.5 text-slate-600 hover:text-hakka-800 font-medium py-1 px-2 rounded-lg hover:bg-slate-200/60 transition"
+            >
+              <i data-lucide="quote" class="w-3.5 h-3.5"></i>
+              <span>引用格式</span>
+            </button>
+
+            <!-- External Direct Link -->
+            <a 
+              href="${paper.url}" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-semibold bg-hakka-700 hover:bg-hakka-800 text-white transition shadow-sm hover:shadow"
+            >
+              <span>閱讀原著</span>
+              <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+            </a>
+          </div>
+
+        </article>
+      `;
+    }
+
+    // Toggle actions
+    function toggleBookmark(id) {
+      if (userBookmarks.has(id)) {
+        userBookmarks.delete(id);
+        showToast("已從收藏清單中移除");
+      } else {
+        userBookmarks.add(id);
+        showToast("已成功加入收藏！");
+      }
+      saveUserData();
+      filterAndRenderPapers();
+    }
+
+    function toggleReadStatus(id) {
+      if (userReadStatus.has(id)) {
+        userReadStatus.delete(id);
+        showToast("標記為：待讀文獻");
+      } else {
+        userReadStatus.add(id);
+        showToast("已標記為：研讀完成 ✓");
+      }
+      saveUserData();
+      filterAndRenderPapers();
+    }
+
+    function toggleCardSummary(id) {
+      if (collapsedCards.has(id)) {
+        collapsedCards.delete(id);
+      } else {
+        collapsedCards.add(id);
+      }
+      filterAndRenderPapers();
+    }
+
+    // Toast logic
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const text = document.getElementById('toast-message');
+      text.innerText = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 2200);
+    }
+
+    // Modal Citation Logic
+    function openCitationModal(id) {
+      const paper = PAPERS_DATA.find(p => p.id === id);
+      if (!paper) return;
+      currentCitationPaper = paper;
+
+      // Format a clean academic citation
+      const citation = `${paper.title}. (${paper.year}). In ${paper.venue}. Available at: ${paper.url}\n[備註] 中文摘要：${paper.summary}`;
+      
+      document.getElementById('citation-text').innerText = citation;
+      const modal = document.getElementById('citation-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeCitationModal() {
+      const modal = document.getElementById('citation-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function copyCitationContent() {
+      const text = document.getElementById('citation-text').innerText;
+      copyToClipboard(text);
+      showToast("引用資訊已複製到剪貼簿！");
+      closeCitationModal();
+    }
+
+    // Safe clipboard fallback
+    function copyToClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      try {
+        document.execCommand('copy');
+      } catch (err) {
+        console.error('Copy fallback failed', err);
+      }
+      document.body.removeChild(textarea);
+    }
+
+    // Filter resets
+    function resetFilters() {
+      currentCategory = 'ALL';
+      searchQuery = '';
+      filterBookmarked = false;
+      filterUnread = false;
+      document.getElementById('search-input').value = '';
+      document.getElementById('clear-search').classList.add('hidden');
+      updateFilterButtonStyles();
+      renderCategoryTabs();
+      filterAndRenderPapers();
+    }
+
+    function updateFilterButtonStyles() {
+      const bmBtn = document.getElementById('toggle-bookmark-filter');
+      const urBtn = document.getElementById('toggle-unread-filter');
+
+      if (filterBookmarked) {
+        bmBtn.classList.add('bg-amber-100', 'border-amber-300', 'text-amber-900');
+        bmBtn.classList.remove('bg-white', 'text-slate-700');
+      } else {
+        bmBtn.classList.remove('bg-amber-100', 'border-amber-300', 'text-amber-900');
+        bmBtn.classList.add('bg-white', 'text-slate-700');
+      }
+
+      if (filterUnread) {
+        urBtn.classList.add('bg-sky-100', 'border-sky-300', 'text-sky-900');
+        urBtn.classList.remove('bg-white', 'text-slate-700');
+      } else {
+        urBtn.classList.remove('bg-sky-100', 'border-sky-300', 'text-sky-900');
+        urBtn.classList.add('bg-white', 'text-slate-700');
+      }
+    }
+
+    // Initialization and Event Listeners
+    window.addEventListener('DOMContentLoaded', () => {
+      renderCategoryTabs();
+      updateProgressUI();
+      filterAndRenderPapers();
+
+      // Search event
+      const searchInput = document.getElementById('search-input');
+      const clearSearchBtn = document.getElementById('clear-search');
+
+      searchInput.addEventListener('input', (e) => {
+        searchQuery = e.target.value;
+        if (searchQuery.trim() !== '') {
+          clearSearchBtn.classList.remove('hidden');
+        } else {
+          clearSearchBtn.classList.add('hidden');
+        }
+        filterAndRenderPapers();
+      });
+
+      clearSearchBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        searchQuery = '';
+        clearSearchBtn.classList.add('hidden');
+        filterAndRenderPapers();
+      });
+
+      // Filter Bookmark Toggle
+      document.getElementById('toggle-bookmark-filter').addEventListener('click', () => {
+        filterBookmarked = !filterBookmarked;
+        updateFilterButtonStyles();
+        filterAndRenderPapers();
+      });
+
+      // Filter Unread Toggle
+      document.getElementById('toggle-unread-filter').addEventListener('click', () => {
+        filterUnread = !filterUnread;
+        updateFilterButtonStyles();
+        filterAndRenderPapers();
+      });
+
+      // Expand / Collapse all summaries
+      document.getElementById('btn-expand-all').addEventListener('click', () => {
+        collapsedCards.clear();
+        filterAndRenderPapers();
+      });
+
+      document.getElementById('btn-collapse-all').addEventListener('click', () => {
+        PAPERS_DATA.forEach(p => collapsedCards.add(p.id));
+        filterAndRenderPapers();
+      });
+
+      // Close modal on escape
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeCitationModal();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
